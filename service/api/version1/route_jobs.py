@@ -1,13 +1,20 @@
 from fastapi import APIRouter
+from typing import List
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 
 from db.session import get_db
 from db.models.jobs import Job
 from schemas.jobs import JobCreate, ShowJob
-from db.repository.jobs import create_new_job, retreive_job
+from db.repository.jobs import create_new_job, retreive_job, list_jobs
 
 router = APIRouter()
+
+
+@router.get("/all", response_model=List[ShowJob])
+def read_jobs(db: Session = Depends(get_db)):
+    jobs = list_jobs(db=db)
+    return jobs
 
 
 @router.post("/create-job/", response_model=ShowJob)
