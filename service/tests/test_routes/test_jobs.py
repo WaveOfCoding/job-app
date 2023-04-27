@@ -1,6 +1,3 @@
-import json
-
-
 def test_create_job(client):
     data = {
         "title": "SDE super",
@@ -48,3 +45,18 @@ def test_read_all_jobs(client):
     assert response.status_code == 200
     assert response.json()[0]
     assert response.json()[1]
+
+
+def test_update_a_job(client):
+    data = {
+        "title": "New Job super",
+        "company": "googlemoogle",
+        "company_url": "www.googlemoogle.com",
+        "location": "USA,NY",
+        "description": "fastapi",
+        "date_posted": "2023-04-27"
+    }
+    client.post("/jobs/create-job/", json=data)
+    data["title"] = "test new title"
+    response = client.put("/jobs/update/1", json=data)
+    assert response.json()["msg"] == "Successfully updated data."

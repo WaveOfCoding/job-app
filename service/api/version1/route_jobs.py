@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, status
 from db.session import get_db
 from db.models.jobs import Job
 from schemas.jobs import JobCreate, ShowJob
-from db.repository.jobs import create_new_job, retreive_job, list_jobs
+from db.repository.jobs import create_new_job, retreive_job, list_jobs, update_job_by_id
 
 router = APIRouter()
 
@@ -30,3 +30,13 @@ def read_job(id: int, db: Session = Depends(get_db)):
     if not job:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Job with this id {id} does not exist")
     return job
+
+
+@router.put("/update/{id}")
+def update_job(id: int, job: JobCreate, db: Session = Depends(get_db)):
+    current_user = 1
+    message = update_job_by_id(id=id, job=job, db=db, owner_id=current_user)
+    if not message:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Job with id {id} not found")
+    return {"msg": "Successfully updated data."}
